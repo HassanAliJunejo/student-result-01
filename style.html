@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Dev Test Results</title>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --secondary: #1e293b;
+      --bg: #0f172a;
+      --text: #f1f5f9;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --pass: #16a34a;
+      --fail: #dc2626;
+      --gold: #ffd700;
+      --silver: #c0c0c0;
+      --bronze: #cd7f32;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Noto Naskh Arabic", system-ui, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      position: relative;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 16px 0;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    main {
+      padding: 20px;
+      overflow-y: auto;
+      height: 75vh;
+      position: relative;
+    }
+
+    /* Congratulations Banner */
+    .congrats-banner {
+      position: fixed;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 40px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      animation: slideDown 0.8s ease forwards;
+      min-width: 300px;
+    }
+
+    @keyframes slideDown {
+      to {
+        top: 0;
+      }
+    }
+
+    .congrats-banner.hide {
+      animation: slideUp 0.8s ease forwards;
+    }
+
+    @keyframes slideUp {
+      to {
+        top: -150px;
+      }
+    }
+
+    /* Falling Flowers */
+    .flower {
+      position: fixed;
+      font-size: 2rem;
+      z-index: 99;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Position Badge */
+    .position-badge {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+    }
+
+    .position-badge.first {
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      color: #000;
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.6);
+    }
+
+    .position-badge.second {
+      background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+      color: #000;
+      box-shadow: 0 4px 20px rgba(192, 192, 192, 0.6);
+    }
+
+    .position-badge.third {
+      background: linear-gradient(135deg, #cd7f32, #e69a5a);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(205, 127, 50, 0.6);
+    }
+
+    .student-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease forwards;
+      position: relative;
+    }
+
+    .student-card.top-three {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .student-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent);
+      margin-bottom: 12px;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    .student-card.top-three .student-img {
+      border-width: 4px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .student-info strong {
+      font-size: 1.2rem;
+      color: var(--accent);
+      display: block;
+    }
+
+    .student-info span {
+      font-size: 0.95rem;
+      opacity: 0.8;
+    }
+
+    .marks {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .mark-box {
+      background: rgba(255, 255, 255, 0.07);
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 14px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .status.pass { color: var(--pass); }
+    .status.fail { color: var(--fail); }
+
+    @media (max-width: 600px) {
+      header { font-size: 1.3rem; padding: 12px 0; }
+      .student-img { width: 90px; height: 90px; }
+      .student-card { padding: 16px; }
+      .position-badge { width: 60px; height: 60px; font-size: 0.9rem; top: -10px; right: -10px; }
+      .congrats-banner { font-size: 1.3rem; padding: 15px 30px; min-width: 250px; }
+    }
+
+    .welcome {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .welcome-box {
+      background: var(--card);
+      padding: 32px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      max-width: 300px;
+    }
+
+    .welcome-box h2 {
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-size: 1.5rem;
+    }
+
+    .welcome-box button {
+      background: var(--accent);
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      color: #0f172a;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .welcome-box button:hover {
+      background: #4fc3f7;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="welcome" id="welcome">
+    <div class="welcome-box">
+      <h2>خوش آمدید!</h2>
+      <p>یہ ویب سائٹ آپ کے HTML اور CSS کے نتائج دکھائے گی۔</p>
+      <button id="startBtn">شروع کریں</button>
+    </div>
+  </div>
+
+  <div class="container" id="resultsContainer" style="display:none;">
+    <header>Web Development Test Results</header>
+    <main id="resultsList"></main>
+  </div>
+
+  <script>
+    const students = [
+      { roll: 1, name: 'Shakir Hasan', html: 41, css: 28, image: 'shakir.jpg' },
+      { roll: 2, name: 'Siddique Raza', html: 41, css: 26, image: 'siddique.jpg' },
+      { roll: 3, name: 'Tufail Raza', html: 40, css: 36, image: 'tufail.jpg' },
+      { roll: 4, name: 'Muhammad Atif', html: 27, css: 20, image: 'atif.jpg' },
+      { roll: 5, name: 'Abrar Ahmed', html: 48, css: 38, image: 'abrar.jpg' },
+      { roll: 6, name: 'Muhammad Shahroz', html: 35, css: 24, image: 'shahroz.jpg' },
+      { roll: 7, name: 'Muhammad Roshan', html: 41, css: 26, image: 'roshan.jpg' },
+      { roll: 8, name: 'Waseem Raza', html: 44, css: 28, image: 'waseem.jpg' },
+    ];
+
+    const container = document.getElementById('resultsContainer');
+    const list = document.getElementById('resultsList');
+    const welcome = document.getElementById('welcome');
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      welcome.style.display = 'none';
+      container.style.display = 'block';
+      showResults();
+    });
+
+    function createFlowers() {
+      const flowers = ['🌸', '🌺', '🌼', '🌻', '🌷', '🏵️', '💐', '🎉'];
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          const flower = document.createElement('div');
+          flower.className = 'flower';
+          flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+          flower.style.left = Math.random() * 100 + 'vw';
+          flower.style.animationDuration = (Math.random() * 3 + 3) + 's';
+          flower.style.fontSize = (Math.random() * 1.5 + 1.5) + 'rem';
+          document.body.appendChild(flower);
+          setTimeout(() => flower.remove(), 6000);
+        }, i * 100);
+      }
+    }
+
+    function showCongrats(position) {
+      const banner = document.createElement('div');
+      banner.className = 'congrats-banner';
+      let text = '';
+      if (position === 1) text = '🏆 مبارک ہو! پہلی پوزیشن 🏆';
+      else if (position === 2) text = '🥈 مبارک ہو! دوسری پوزیشن 🥈';
+      else if (position === 3) text = '🥉 مبارک ہو! تیسری پوزیشن 🥉';
+      
+      banner.textContent = text;
+      document.body.appendChild(banner);
+      
+      createFlowers();
+      
+      setTimeout(() => {
+        banner.classList.add('hide');
+        setTimeout(() => banner.remove(), 800);
+      }, 4000);
+    }
+
+    function showResults() {
+      students.forEach(s => s.percent = Math.round((s.html + s.css) / 100 * 50));
+      const sorted = [...students].sort((a, b) => b.percent - a.percent);
+
+      const displayOrder = [sorted[2], sorted[1], sorted[0], ...sorted.slice(3)];
+
+      let i = 0;
+      function showNext() {
+        if (i >= displayOrder.length) return;
+        const s = displayOrder[i];
+        const total = s.html + s.css;
+        const percent = s.percent;
+        const status = percent >= 20 ? '✅ Passed' : '❌ Failed';
+        const passClass = percent >= 20 ? 'pass' : 'fail';
+
+        let positionBadge = '';
+        let positionClass = '';
+        let position = 0;
+        
+        if (i === 0) {
+          positionBadge = '<div class="position-badge third">3rd</div>';
+          positionClass = 'top-three';
+          position = 3;
+        } else if (i === 1) {
+          positionBadge = '<div class="position-badge second">2nd</div>';
+          positionClass = 'top-three';
+          position = 2;
+        } else if (i === 2) {
+          positionBadge = '<div class="position-badge first">1st</div>';
+          positionClass = 'top-three';
+          position = 1;
+        }
+
+        const card = document.createElement('div');
+        card.className = `student-card ${positionClass}`;
+        card.innerHTML = `
+          ${positionBadge}
+          <img src="${s.image}" alt="${s.name}" class="student-img">
+          <div class="student-info">
+            <strong>${s.name}</strong>
+            <span>Roll #: ${s.roll}</span>
+          </div>
+          <div class="marks">
+            <div class="mark-box">HTML: ${s.html}</div>
+            <div class="mark-box">CSS: ${s.css}</div>
+            <div class="mark-box">Total: ${total}</div>
+            <div class="mark-box">Percentage: ${percent}%</div>
+          </div>
+          <div class="status ${passClass}">${status}</div>
+        `;
+        list.appendChild(card);
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+        
+        if (position > 0) {
+          setTimeout(() => showCongrats(position), 500);
+        }
+        
+        i++;
+        setTimeout(showNext, 7000);
+      }
+      showNext();
+    }
+  </script>
+</body>
+</html>
